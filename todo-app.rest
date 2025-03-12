@@ -1,0 +1,46 @@
+### GET /
+
+GET http://localhost:1111
+
+
+### Register a user /
+POST http://localhost:1111/auth/register
+Content-Type: application/json
+
+{
+    "username" : "Lin",
+    "password" : "12234"
+}
+
+
+### Login a user / 
+POST http://localhost:1111/auth/login
+Content-Type: application/json
+
+{
+    "username" : "Lin",
+    "password" : "12234"
+}
+
+### Fetch all todos
+GET http://localhost:1111/todos
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzQxNzIxNDc1LCJleHAiOjE3NDE4MDc4NzV9.tW7I_WjVTni9EJ-Tjhg1NEE_TLMnEAyGotnmre_70BY
+
+### Create todos
+POST http://localhost:1111/todos
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzQxNzIxNDc1LCJleHAiOjE3NDE4MDc4NzV9.tW7I_WjVTni9EJ-Tjhg1NEE_TLMnEAyGotnmre_70BY
+Content-Type: application/json
+
+{
+    "task" : "Finish coding the project"
+}
+
+
+### Update a todos
+PUT http://localhost:1111/todos/2?page=4
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzQxNzIxNDc1LCJleHAiOjE3NDE4MDc4NzV9.tW7I_WjVTni9EJ-Tjhg1NEE_TLMnEAyGotnmre_70BY
+Content-Type: application/json
+
+{
+    "completed" : 1
+}
