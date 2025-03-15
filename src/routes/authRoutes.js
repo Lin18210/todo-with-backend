@@ -1,11 +1,11 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import db from '../db.js';
 import jwt from 'jsonwebtoken'
+import prisma from '../prismaClient.js';
 
 const router = express.Router();
 
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
 
     const { username, password } = req.body;
 
@@ -14,16 +14,25 @@ router.post('/register', (req, res) => {
     
     // save the new user and hasedpassword to the database
     try{
-        const insertUser = db.prepare(`INSERT INTO users (username, password) VALUES (?, ?)`)
-        const result = insertUser.run(username, hashedPassword)
-
+        
+        const user = await prisma.user.create({
+            data: {
+                username,
+                password: hashedPassword
+            }
+        })
+        
         //when there is user there should be todo too. I mean it's a todo list app duh
         const defaultTodo = `Hello :) Please add your first todo`
-        const insertTodo = db.prepare(`INSERT INTO todos (user_id, task) VALUES (?, ?)`)
-        insertTodo.run(result.lastInsertRowid, defaultTodo) 
+        await prisma.todo.create({
+            data: {
+                task: defaultTodo,
+                userId: user.id
+            }
+        })
 
         //create token
-        const token = jwt.sign({ id: result.lastInsertRowid}, process.env.JWT_SECRET, {expiresIn: '24h'})
+        const token = jwt.sign({ id: user.id}, process.env.JWT_SECRET, {expiresIn: '24h'})
         return res.json({token})
 
     }catch(err){
@@ -32,14 +41,17 @@ router.post('/register', (req, res) => {
     }
 });
 
-router.post('/login', (req,res) => {
+router.post('/login',async (req,res) => {
 
     const {username , password} = req.body;
 
     try{
         //get the username
-        const getUser = db.prepare('SELECT * FROM users WHERE username = ?')
-        const user = getUser.get(username)
+        const user = await prisma.user.findUnique({
+            where: {
+                username: username
+            }
+        })
 
         //check the username if it is match with the register user in the database
         if(!user){return res.status(404).send({message:"User not found"})}
